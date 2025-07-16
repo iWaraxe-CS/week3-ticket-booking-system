@@ -1,0 +1,112 @@
+# Development Profile Configuration
+# This configuration demonstrates:
+# - Profile-specific properties
+# - Development-friendly settings
+# - Enhanced logging for debugging
+# - Development tools configuration
+
+spring:
+  # Development-specific datasource configuration
+  datasource:
+    url: jdbc:h2:mem:devdb
+    username: dev
+    password: dev
+    
+  # H2 Console enabled for development
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true  # Allow external connections in dev
+        
+  # JPA Configuration for development
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Recreate tables on startup
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+        
+  # Jackson configuration for development
+  jackson:
+    serialization:
+      indent-output: true  # Pretty print JSON in development
+      
+  # DevTools configuration
+  devtools:
+    restart:
+      enabled: true
+      additional-paths: src/main/java
+    livereload:
+      enabled: true
+      port: 35729
+
+# Server configuration for development
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: always  # Full stack traces in development
+    include-exception: true
+
+# Enhanced logging for development
+logging:
+  level:
+    root: INFO
+    com.coherentsolutions.ticketbookingsystem: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web.servlet.DispatcherServlet: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints for development
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Expose all endpoints in development
+  endpoint:
+    health:
+      show-details: always
+
+# Development-specific application properties
+app:
+  # Security settings for development
+  security:
+    jwt:
+      secret: "dev-secret-key-not-for-production"
+      expiration: 86400000  # 24 hours
+      
+  # Email settings for development
+  email:
+    enabled: false  # Disable email in development
+    debug: true
+    
+  # Development flags
+  development:
+    sample-data:
+      enabled: true  # Load sample data on startup
+      users-count: 10
+    debug:
+      enabled: true
+      log-requests: true
+      log-responses: true
+      
+  # API settings for development
+  api:
+    cors:
+      enabled: true
+      allowed-origins: "http://localhost:3000,http://localhost:8080"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      
+# TODO: Add development-specific database configuration
+# TODO: Configure development-specific external services
+# TODO: Add development debugging tools configuration

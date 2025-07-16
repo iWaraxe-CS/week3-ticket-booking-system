@@ -1,0 +1,163 @@
+# Spring Boot Application Configuration
+# This configuration demonstrates:
+# - YAML configuration format (compare with JSON in C#)
+# - Environment-specific configurations
+# - Logging configuration
+# - Server configuration
+# - H2 database configuration
+
+spring:
+  application:
+    name: ticket-booking-system
+  
+  # Profile configuration
+  profiles:
+    active: dev  # TODO: Change to 'prod' for production
+  
+  # H2 Database Configuration (for development)
+  # TODO: Replace with PostgreSQL/MySQL configuration for production
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+    # TODO: Configure connection pool settings
+    # hikari:
+    #   maximum-pool-size: 10
+    #   minimum-idle: 5
+    #   connection-timeout: 30000
+  
+  # H2 Console Configuration (for development only)
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false  # TODO: Set to false for production
+  
+  # JPA Configuration
+  # TODO: Configure JPA properties for database persistence
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop  # TODO: Change to 'validate' for production
+    show-sql: true  # TODO: Set to false for production
+    properties:
+      hibernate:
+        format_sql: true
+  
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: true  # TODO: Set to false for production
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+  
+  # Validation Configuration
+  validation:
+    # TODO: Configure validation messages
+    
+  # DevTools Configuration (development only)
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /  # TODO: Consider adding context path for production
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param  # TODO: Set to 'never' for production
+    include-exception: false
+  # TODO: Configure SSL for production
+  # ssl:
+  #   key-store: classpath:keystore.p12
+  #   key-store-password: password
+  #   key-store-type: PKCS12
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.coherentsolutions.ticketbookingsystem: DEBUG  # TODO: Change to INFO for production
+    org.springframework.web: DEBUG  # TODO: Change to INFO for production
+    org.hibernate.SQL: DEBUG  # TODO: Change to WARN for production
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # TODO: Remove for production
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  # TODO: Configure file logging for production
+  # file:
+  #   name: logs/application.log
+  #   max-size: 10MB
+  #   max-history: 10
+
+# Management and Actuator Configuration
+# TODO: Configure Spring Boot Actuator for production monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics  # TODO: Limit exposed endpoints for production
+  endpoint:
+    health:
+      show-details: when-authorized  # TODO: Configure for production
+  info:
+    env:
+      enabled: true
+
+# Application-specific Configuration
+# TODO: Add custom application properties
+app:
+  name: "Ticket Booking System"
+  version: "1.0.0"
+  description: "REST API for ticket booking system"
+  
+  # Security Configuration (for future implementation)
+  # TODO: Configure JWT and authentication
+  security:
+    jwt:
+      secret: "your-secret-key"  # TODO: Use environment variable
+      expiration: 86400000  # 24 hours
+    
+  # Email Configuration (for future implementation)
+  # TODO: Configure email service
+  email:
+    from: "noreply@ticketbooking.com"
+    enabled: false
+    
+  # File Upload Configuration (for future implementation)
+  # TODO: Configure file upload limits
+  upload:
+    max-file-size: 10MB
+    max-request-size: 10MB
+    
+  # Pagination Configuration
+  # TODO: Configure default pagination settings
+  pagination:
+    default-page-size: 10
+    max-page-size: 100
+    
+  # API Configuration
+  api:
+    version: "v1"
+    base-path: "/api/v1"
+    
+  # Cache Configuration (for future implementation)
+  # TODO: Configure caching
+  cache:
+    enabled: false
+    ttl: 3600  # 1 hour
+
+# TODO: Add environment-specific configurations in separate files
+# TODO: Configure external service connections
+# TODO: Add monitoring and metrics configuration
+# TODO: Configure rate limiting
+# TODO: Add API documentation configuration

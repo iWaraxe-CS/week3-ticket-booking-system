@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "Ticket Booking API - Week 3",
+    "description": "REST API endpoints for user management in the ticket booking system.\n\nThis collection demonstrates:\n- RESTful API design principles\n- Proper HTTP methods and status codes\n- Request/response validation\n- Error handling scenarios\n- Environment variable usage\n\nTODO: Students should complete this collection with actual API calls",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "apiVersion",
+      "value": "v1",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "userEmail",
+      "value": "test@example.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "User Management",
+      "description": "User CRUD operations",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phoneNumber\": \"+1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users"]
+            },
+            "description": "TODO: Create a new user with valid data\n\nExpected Response:\n- Status: 201 Created\n- Body: UserResponse with generated ID\n- Headers: Location header with user URL"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "{{userId}}"]
+            },
+            "description": "TODO: Retrieve a user by their ID\n\nExpected Response:\n- Status: 200 OK for existing user\n- Status: 404 Not Found for non-existent user\n- Body: UserResponse with user data"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "0",
+                  "description": "Page number (0-based)"
+                },
+                {
+                  "key": "size",
+                  "value": "10",
+                  "description": "Page size"
+                }
+              ]
+            },
+            "description": "TODO: Retrieve all users with pagination\n\nExpected Response:\n- Status: 200 OK\n- Body: Array of UserResponse objects\n- TODO: Add pagination headers"
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Jane\",\n  \"lastName\": \"Smith\",\n  \"phoneNumber\": \"+0987654321\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "{{userId}}"]
+            },
+            "description": "TODO: Update an existing user (partial update)\n\nExpected Response:\n- Status: 200 OK for successful update\n- Status: 404 Not Found for non-existent user\n- Body: Updated UserResponse"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "{{userId}}"]
+            },
+            "description": "TODO: Delete a user (soft delete recommended)\n\nExpected Response:\n- Status: 204 No Content for successful deletion\n- Status: 404 Not Found for non-existent user\n- Body: Empty"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Status Management",
+      "description": "User activation/deactivation operations",
+      "item": [
+        {
+          "name": "Activate User",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "{{userId}}", "activate"]
+            },
+            "description": "TODO: Activate a user account\n\nExpected Response:\n- Status: 200 OK\n- Body: Updated UserResponse with active=true"
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate User",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/{{userId}}/deactivate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "{{userId}}", "deactivate"]
+            },
+            "description": "TODO: Deactivate a user account\n\nExpected Response:\n- Status: 200 OK\n- Body: Updated UserResponse with active=false"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User Search and Analytics",
+      "description": "User search and analytics operations",
+      "item": [
+        {
+          "name": "Search Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/search?q=John",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "John",
+                  "description": "Search term"
+                }
+              ]
+            },
+            "description": "TODO: Search users by name\n\nExpected Response:\n- Status: 200 OK\n- Body: Array of matching UserResponse objects"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User Count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/count",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "count"]
+            },
+            "description": "TODO: Get total number of users\n\nExpected Response:\n- Status: 200 OK\n- Body: Number representing user count"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Error Scenarios",
+      "description": "Test error handling and validation",
+      "item": [
+        {
+          "name": "Create User - Invalid Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"invalid-email\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users"]
+            },
+            "description": "TODO: Test validation error for invalid email\n\nExpected Response:\n- Status: 400 Bad Request\n- Body: ErrorResponse with validation details"
+          },
+          "response": []
+        },
+        {
+          "name": "Create User - Missing Required Fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users"]
+            },
+            "description": "TODO: Test validation error for missing required fields\n\nExpected Response:\n- Status: 400 Bad Request\n- Body: ErrorResponse with multiple field errors"
+          },
+          "response": []
+        },
+        {
+          "name": "Get User - Not Found",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/999",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "999"]
+            },
+            "description": "TODO: Test user not found scenario\n\nExpected Response:\n- Status: 404 Not Found\n- Body: ErrorResponse with not found message"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "description": "API health and status checks",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/{{apiVersion}}/users/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "{{apiVersion}}", "users", "health"]
+            },
+            "description": "TODO: Check API health status\n\nExpected Response:\n- Status: 200 OK\n- Body: Health status message"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// TODO: Add pre-request scripts",
+          "// Set up authentication headers",
+          "// Generate test data",
+          "// Set dynamic variables"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// TODO: Add test scripts",
+          "// Validate response status",
+          "// Validate response structure",
+          "// Extract variables for next requests"
+        ]
+      }
+    }
+  ]
+}

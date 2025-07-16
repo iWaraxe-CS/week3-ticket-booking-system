@@ -1,0 +1,103 @@
+# Test Profile Configuration
+# This configuration demonstrates:
+# - Test-specific properties
+# - In-memory database for testing
+# - Minimal logging for test performance
+# - Test-specific settings
+
+spring:
+  # Test-specific datasource configuration
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: test
+    password: test
+    driver-class-name: org.h2.Driver
+    
+  # H2 Console disabled for tests
+  h2:
+    console:
+      enabled: false
+      
+  # JPA Configuration for testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # Clean database for each test
+    show-sql: false  # Disable SQL logging for test performance
+    properties:
+      hibernate:
+        format_sql: false
+        
+  # Jackson configuration for testing
+  jackson:
+    serialization:
+      indent-output: false  # Compact JSON for tests
+      
+  # Disable DevTools for testing
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+
+# Server configuration for testing
+server:
+  port: 0  # Random port for testing
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: never  # No stack traces in tests
+    include-exception: false
+
+# Minimal logging for testing
+logging:
+  level:
+    root: WARN
+    com.coherentsolutions.ticketbookingsystem: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.springframework.test: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Management endpoints disabled for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+
+# Test-specific application properties
+app:
+  # Security settings for testing
+  security:
+    jwt:
+      secret: "test-secret-key"
+      expiration: 3600000  # 1 hour for tests
+      
+  # Email settings for testing
+  email:
+    enabled: false
+    debug: false
+    
+  # Test-specific flags
+  test:
+    sample-data:
+      enabled: false  # No sample data in tests
+    cleanup:
+      enabled: true  # Clean up after tests
+      
+  # API settings for testing
+  api:
+    cors:
+      enabled: false  # No CORS in tests
+      
+  # Cache settings for testing
+  cache:
+    enabled: false  # No caching in tests
+    
+# TODO: Add test-specific database configuration
+# TODO: Configure test-specific external service mocks
+# TODO: Add test performance settings
