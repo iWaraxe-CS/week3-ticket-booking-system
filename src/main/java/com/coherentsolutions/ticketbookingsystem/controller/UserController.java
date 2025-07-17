@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for user management operations.
@@ -31,8 +32,15 @@ import java.util.List;
 @Slf4j                         // Logging support
 public class UserController {
     
-    // TODO: Inject UserService dependency
-    // private final UserService userService;
+    // Injected dependency - basic implementation
+    private final UserService userService;
+    
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add validation groups
+    // - Implement HATEOAS links
+    // - Add API versioning
+    // - Add rate limiting
+    // - Add authentication/authorization
     
     /**
      * Creates a new user.
@@ -48,14 +56,19 @@ public class UserController {
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody CreateUserRequest request) {
         log.info("Creating new user with email: {}", request.getEmail());
         
-        // TODO: Validate request
-        // TODO: Call userService.createUser(request)
-        // TODO: Return 201 Created with user response
-        // TODO: Add Location header with user URL
-        // TODO: Handle validation errors
-        // TODO: Handle duplicate email exception
+        // Basic implementation - create user through service
+        UserResponse userResponse = userService.createUser(request);
         
-        throw new UnsupportedOperationException("createUser endpoint not implemented yet");
+        // Return 201 Created with user response
+        return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add Location header with user URL
+        // - Implement more sophisticated validation
+        // - Add rate limiting
+        // - Implement email verification workflow
+        // - Add user creation audit logging
+        // - Handle concurrent user creation
     }
     
     /**
@@ -75,13 +88,19 @@ public class UserController {
         
         log.info("Fetching all users - page: {}, size: {}", page, size);
         
-        // TODO: Validate page and size parameters
-        // TODO: Call userService.findAll(page, size)
-        // TODO: Return 200 OK with user list
-        // TODO: Handle empty results
-        // TODO: Add pagination headers
+        // Basic implementation - get users with pagination
+        List<UserResponse> users = userService.findAll(page, size);
         
-        throw new UnsupportedOperationException("getAllUsers endpoint not implemented yet");
+        // Return 200 OK with user list
+        return ResponseEntity.ok(users);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add comprehensive parameter validation
+        // - Add pagination metadata in response headers
+        // - Implement sorting options
+        // - Add filtering capabilities
+        // - Implement caching for frequently accessed pages
+        // - Add total count in response
     }
     
     /**
@@ -97,13 +116,20 @@ public class UserController {
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         log.info("Fetching user by ID: {}", id);
         
-        // TODO: Validate ID parameter
-        // TODO: Call userService.findById(id)
-        // TODO: Return 200 OK if found
-        // TODO: Return 404 Not Found if not found
-        // TODO: Handle invalid ID format
+        // Basic implementation - find user by ID
+        Optional<UserResponse> userResponse = userService.findById(id);
         
-        throw new UnsupportedOperationException("getUserById endpoint not implemented yet");
+        // Return 200 OK if found, 404 if not found
+        return userResponse
+                .map(user -> ResponseEntity.ok(user))
+                .orElse(ResponseEntity.notFound().build());
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add comprehensive ID validation
+        // - Implement user access control
+        // - Add caching for frequently accessed users
+        // - Add user activity logging
+        // - Handle different ID formats (UUID, etc.)
     }
     
     /**
@@ -123,14 +149,24 @@ public class UserController {
         
         log.info("Updating user with ID: {}", id);
         
-        // TODO: Validate ID and request
-        // TODO: Call userService.updateUser(id, request)
-        // TODO: Return 200 OK with updated user
-        // TODO: Return 404 if user not found
-        // TODO: Handle validation errors
-        // TODO: Handle email uniqueness conflicts
+        try {
+            // Basic implementation - update user through service
+            UserResponse updatedUser = userService.updateUser(id, request);
+            
+            // Return 200 OK with updated user
+            return ResponseEntity.ok(updatedUser);
+        } catch (IllegalArgumentException e) {
+            // Return 404 if user not found or validation error
+            return ResponseEntity.notFound().build();
+        }
         
-        throw new UnsupportedOperationException("updateUser endpoint not implemented yet");
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Implement proper exception handling with different status codes
+        // - Add optimistic locking for concurrent updates
+        // - Support partial updates (PATCH semantics)
+        // - Add update audit logging
+        // - Implement field-level validation
+        // - Add email change verification
     }
     
     /**
@@ -146,13 +182,24 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         log.info("Deleting user with ID: {}", id);
         
-        // TODO: Validate ID parameter
-        // TODO: Call userService.deleteUser(id)
-        // TODO: Return 204 No Content on success
-        // TODO: Return 404 if user not found
-        // TODO: Handle deletion constraints
+        try {
+            // Basic implementation - delete user through service
+            userService.deleteUser(id);
+            
+            // Return 204 No Content on success
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            // Return 404 if user not found
+            return ResponseEntity.notFound().build();
+        }
         
-        throw new UnsupportedOperationException("deleteUser endpoint not implemented yet");
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Implement soft delete instead of hard delete
+        // - Add confirmation mechanisms
+        // - Check for related data before deletion
+        // - Add deletion audit logging
+        // - Implement cascade deletion rules
+        // - Add restore functionality
     }
     
     /**
@@ -168,12 +215,26 @@ public class UserController {
     public ResponseEntity<UserResponse> activateUser(@PathVariable Long id) {
         log.info("Activating user with ID: {}", id);
         
-        // TODO: Validate ID parameter
-        // TODO: Call userService.activateUser(id)
-        // TODO: Return updated user response
-        // TODO: Handle user not found
+        try {
+            // Basic implementation - activate user through service
+            userService.activateUser(id);
+            
+            // Get updated user to return
+            Optional<UserResponse> updatedUser = userService.findById(id);
+            return updatedUser
+                    .map(user -> ResponseEntity.ok(user))
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            // Return 404 if user not found
+            return ResponseEntity.notFound().build();
+        }
         
-        throw new UnsupportedOperationException("activateUser endpoint not implemented yet");
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add activation email notification
+        // - Implement activation validation rules
+        // - Add activation audit logging
+        // - Support bulk activation
+        // - Add activation tokens for security
     }
     
     /**
@@ -189,12 +250,26 @@ public class UserController {
     public ResponseEntity<UserResponse> deactivateUser(@PathVariable Long id) {
         log.info("Deactivating user with ID: {}", id);
         
-        // TODO: Validate ID parameter
-        // TODO: Call userService.deactivateUser(id)
-        // TODO: Return updated user response
-        // TODO: Handle user not found
+        try {
+            // Basic implementation - deactivate user through service
+            userService.deactivateUser(id);
+            
+            // Get updated user to return
+            Optional<UserResponse> updatedUser = userService.findById(id);
+            return updatedUser
+                    .map(user -> ResponseEntity.ok(user))
+                    .orElse(ResponseEntity.notFound().build());
+        } catch (IllegalArgumentException e) {
+            // Return 404 if user not found
+            return ResponseEntity.notFound().build();
+        }
         
-        throw new UnsupportedOperationException("deactivateUser endpoint not implemented yet");
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add deactivation email notification
+        // - Implement deactivation validation rules
+        // - Add deactivation audit logging
+        // - Support bulk deactivation
+        // - Add grace period for reactivation
     }
     
     /**
@@ -210,12 +285,19 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> searchUsers(@RequestParam("q") String searchTerm) {
         log.info("Searching users with term: {}", searchTerm);
         
-        // TODO: Validate search term
-        // TODO: Call userService.searchByName(searchTerm)
-        // TODO: Return 200 OK with search results
-        // TODO: Handle empty results
+        // Basic implementation - search users by name
+        List<UserResponse> searchResults = userService.searchByName(searchTerm);
         
-        throw new UnsupportedOperationException("searchUsers endpoint not implemented yet");
+        // Return 200 OK with search results
+        return ResponseEntity.ok(searchResults);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add comprehensive search term validation
+        // - Implement fuzzy search capabilities
+        // - Add search result ranking
+        // - Implement search pagination
+        // - Add search analytics
+        // - Support multiple search fields
     }
     
     /**
@@ -230,10 +312,18 @@ public class UserController {
     public ResponseEntity<Long> getUserCount() {
         log.info("Getting user count");
         
-        // TODO: Call userService.countUsers()
-        // TODO: Return 200 OK with count
+        // Basic implementation - get user count
+        long userCount = userService.countUsers();
         
-        throw new UnsupportedOperationException("getUserCount endpoint not implemented yet");
+        // Return 200 OK with count
+        return ResponseEntity.ok(userCount);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add filtering options (active only, by role, etc.)
+        // - Implement caching for count operations
+        // - Add count by date range
+        // - Support different counting metrics
+        // - Add count analytics
     }
     
     // TODO: Add additional endpoints as needed

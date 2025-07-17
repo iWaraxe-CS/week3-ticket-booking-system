@@ -84,6 +84,7 @@ public class User {
      * TODO: Implement soft delete functionality
      * TODO: Consider using enum for user status (ACTIVE, INACTIVE, SUSPENDED)
      */
+    @Builder.Default
     private boolean active = true;
     
     // TODO: Add audit fields (createdBy, updatedBy) for production systems

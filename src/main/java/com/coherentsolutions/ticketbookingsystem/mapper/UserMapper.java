@@ -76,128 +76,84 @@ public interface UserMapper {
     
     /**
      * Custom mapping method for date formatting.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add timezone support
+     * - Implement locale-specific formatting
+     * - Add multiple date format options
      */
     default String formatDateTime(LocalDateTime dateTime) {
-        // TODO: Format LocalDateTime to string
-        // TODO: Handle null values
-        // TODO: Use consistent date format
-        
         if (dateTime == null) {
             return null;
         }
         
-        // TODO: Use DateTimeFormatter for consistent formatting
-        // return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        
-        return null; // Placeholder
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
     
     /**
      * Custom mapping method for parsing date strings.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add multiple date format support
+     * - Implement robust error handling
+     * - Add timezone parsing
      */
     default LocalDateTime parseDateTime(String dateString) {
-        // TODO: Parse string to LocalDateTime
-        // TODO: Handle null/empty values
-        // TODO: Handle parsing errors
-        
         if (dateString == null || dateString.trim().isEmpty()) {
             return null;
         }
         
-        // TODO: Use DateTimeFormatter for parsing
-        // return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        
-        return null; // Placeholder
+        try {
+            return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (Exception e) {
+            // Basic error handling - students can enhance
+            return null;
+        }
     }
     
     /**
      * Custom mapping method for full name.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add support for middle names
+     * - Implement name formatting options
+     * - Add internationalization support
      */
     default String mapFullName(String firstName, String lastName) {
-        // TODO: Combine first and last name
-        // TODO: Handle null values
-        // TODO: Handle empty strings
-        
         if (firstName == null && lastName == null) {
             return null;
         }
         
-        // TODO: Implement full name logic
-        // StringBuilder result = new StringBuilder();
-        // if (firstName != null && !firstName.trim().isEmpty()) {
-        //     result.append(firstName.trim());
-        // }
-        // if (lastName != null && !lastName.trim().isEmpty()) {
-        //     if (result.length() > 0) {
-        //         result.append(" ");
-        //     }
-        //     result.append(lastName.trim());
-        // }
-        // return result.toString();
-        
-        return null; // Placeholder
+        StringBuilder result = new StringBuilder();
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            result.append(firstName.trim());
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            if (result.length() > 0) {
+                result.append(" ");
+            }
+            result.append(lastName.trim());
+        }
+        return result.toString();
     }
     
-    /**
-     * Custom mapping method for password hashing.
-     * TODO: Implement this method
-     */
-    default String hashPassword(String plainPassword) {
-        // TODO: Hash password using BCrypt or similar
-        // TODO: Handle null passwords
-        // TODO: Use proper password hashing library
-        
-        if (plainPassword == null || plainPassword.trim().isEmpty()) {
-            return null;
-        }
-        
-        // TODO: Use BCryptPasswordEncoder or similar
-        // return passwordEncoder.encode(plainPassword);
-        
-        return null; // Placeholder - students should implement
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add password hashing method
+    // - Implement BCrypt password hashing
+    // - Add password strength validation
+    // - Add salt generation
     
-    /**
-     * Custom mapping method for email normalization.
-     * TODO: Implement this method
-     */
-    default String normalizeEmail(String email) {
-        // TODO: Normalize email (lowercase, trim)
-        // TODO: Handle null values
-        // TODO: Validate email format
-        
-        if (email == null) {
-            return null;
-        }
-        
-        // TODO: Implement email normalization
-        // return email.trim().toLowerCase();
-        
-        return null; // Placeholder
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add email normalization method
+    // - Add email format validation
+    // - Implement domain normalization
+    // - Add support for email aliases
     
-    /**
-     * Custom mapping method for phone number formatting.
-     * TODO: Implement this method
-     */
-    default String formatPhoneNumber(String phoneNumber) {
-        // TODO: Format phone number consistently
-        // TODO: Handle null values
-        // TODO: Remove non-numeric characters
-        
-        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
-            return null;
-        }
-        
-        // TODO: Implement phone number formatting
-        // String cleaned = phoneNumber.replaceAll("[^\\d+]", "");
-        // return cleaned;
-        
-        return null; // Placeholder
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add phone number formatting method
+    // - Add international phone number formatting
+    // - Implement phone number validation
+    // - Add region-specific formatting
     
     /**
      * Custom conditional mapping method.
@@ -213,20 +169,18 @@ public interface UserMapper {
     
     /**
      * Custom mapping method for user status.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add more sophisticated status types
+     * - Implement status internationalization
+     * - Add status-specific styling information
      */
     default String mapUserStatus(Boolean active) {
-        // TODO: Convert boolean to readable status
-        // TODO: Handle null values
-        
         if (active == null) {
             return "Unknown";
         }
         
-        // TODO: Return appropriate status text
-        // return active ? "Active" : "Inactive";
-        
-        return null; // Placeholder
+        return active ? "Active" : "Inactive";
     }
     
     // TODO: Add more custom mapping methods as needed
@@ -236,37 +190,44 @@ public interface UserMapper {
     
     /**
      * After mapping method for post-processing.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add audit field population
+     * - Implement timezone handling
+     * - Add validation after mapping
      */
     @AfterMapping
     default void setTimestamps(@MappingTarget User user) {
-        // TODO: Set created/updated timestamps
-        // TODO: Handle new vs existing entities
-        
         LocalDateTime now = LocalDateTime.now();
         
         if (user.getId() == null) {
-            // TODO: Set creation timestamp for new entities
-            // user.setCreatedAt(now);
+            user.setCreatedAt(now);
         }
         
-        // TODO: Always set updated timestamp
-        // user.setUpdatedAt(now);
+        user.setUpdatedAt(now);
     }
     
     /**
      * Before mapping method for pre-processing.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add comprehensive request validation
+     * - Implement business rule validation
+     * - Add security checks
      */
     @BeforeMapping
     default void validateInput(CreateUserRequest request) {
-        // TODO: Add custom validation logic
-        // TODO: Throw exceptions for invalid input
-        
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null");
         }
         
-        // TODO: Add more validation logic
+        // Basic validation - students can enhance
+        if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        
+        if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
+            throw new IllegalArgumentException("Password cannot be null or empty");
+        }
     }
 }

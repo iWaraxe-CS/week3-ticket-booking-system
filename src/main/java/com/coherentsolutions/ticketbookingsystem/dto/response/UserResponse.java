@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * Compare with C# DTOs and record types.
  */
 @Data                    // Generates getters, setters, toString, equals, hashCode
-@Builder                 // Generates builder pattern
+@Builder(toBuilder = true)  // Generates builder pattern with toBuilder() method
 @NoArgsConstructor      // Default constructor (required by Jackson)
 @AllArgsConstructor     // Constructor with all parameters
 public class UserResponse {

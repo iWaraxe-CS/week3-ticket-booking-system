@@ -44,42 +44,36 @@ public class GlobalExceptionHandler {
         
         log.warn("Validation error occurred: {}", ex.getMessage());
         
-        // TODO: Extract field errors from exception
-        // TODO: Create map of field -> error message
-        // TODO: Build ErrorResponse with validation details
-        // TODO: Return 400 Bad Request
+        // Extract field errors from exception
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
+        }
         
-        Map<String, String> errors = new HashMap<>();
+        // Build ErrorResponse with validation details
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code("VALIDATION_ERROR")
+                .message("Validation failed for request")
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(getRequestPath(request))
+                .details(fieldErrors)
+                .timestamp(LocalDateTime.now())
+                .build();
         
-        // TODO: Iterate through field errors
-        // for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-        //     errors.put(error.getField(), error.getDefaultMessage());
-        // }
+        // Return 400 Bad Request
+        return ResponseEntity.badRequest().body(errorResponse);
         
-        // TODO: Build and return ErrorResponse
-        
-        throw new UnsupportedOperationException("handleValidationErrors not implemented yet");
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add field-specific validation messages
+        // - Implement localized validation messages
+        // - Add validation group support
+        // - Implement custom validation error formatting
     }
     
-    /**
-     * Handles resource not found exceptions.
-     * 
-     * TODO: Implement resource not found handling
-     * TODO: Return 404 Not Found with appropriate message
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFound(
-            RuntimeException ex, 
-            WebRequest request) {
-        
-        log.warn("Resource not found: {}", ex.getMessage());
-        
-        // TODO: Check if exception is resource not found type
-        // TODO: Build ErrorResponse with 404 status
-        // TODO: Include request path in error
-        
-        throw new UnsupportedOperationException("handleResourceNotFound not implemented yet");
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add specific ResourceNotFoundException handler
+    // - Implement custom exception types
+    // - Add resource-specific error messages
     
     /**
      * Handles illegal argument exceptions.
@@ -94,52 +88,34 @@ public class GlobalExceptionHandler {
         
         log.warn("Illegal argument: {}", ex.getMessage());
         
-        // TODO: Build ErrorResponse with 400 status
-        // TODO: Include helpful error message
+        // Build ErrorResponse with 400 status
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code("BAD_REQUEST")
+                .message(sanitizeErrorMessage(ex.getMessage()))
+                .status(HttpStatus.BAD_REQUEST.value())
+                .path(getRequestPath(request))
+                .timestamp(LocalDateTime.now())
+                .build();
         
-        throw new UnsupportedOperationException("handleIllegalArgument not implemented yet");
+        // Return 400 Bad Request
+        return ResponseEntity.badRequest().body(errorResponse);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add specific error codes for different argument types
+        // - Implement detailed error context
+        // - Add suggestion for fixing the error
+        // - Implement error categorization
     }
     
-    /**
-     * Handles duplicate resource exceptions.
-     * 
-     * TODO: Implement duplicate resource handling
-     * TODO: Return 409 Conflict with appropriate message
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleDuplicateResource(
-            RuntimeException ex, 
-            WebRequest request) {
-        
-        log.warn("Duplicate resource: {}", ex.getMessage());
-        
-        // TODO: Check if exception is duplicate resource type
-        // TODO: Build ErrorResponse with 409 status
-        // TODO: Include conflict details
-        
-        throw new UnsupportedOperationException("handleDuplicateResource not implemented yet");
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add specific DuplicateResourceException handler
+    // - Implement conflict resolution suggestions
+    // - Add duplicate resource detection
     
-    /**
-     * Handles general runtime exceptions.
-     * 
-     * TODO: Implement general exception handling
-     * TODO: Return 500 Internal Server Error
-     * TODO: Hide sensitive information
-     */
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(
-            RuntimeException ex, 
-            WebRequest request) {
-        
-        log.error("Runtime exception occurred", ex);
-        
-        // TODO: Build ErrorResponse with 500 status
-        // TODO: Use generic error message for security
-        // TODO: Include trace ID for debugging
-        
-        throw new UnsupportedOperationException("handleRuntimeException not implemented yet");
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add specific RuntimeException handler if needed
+    // - Implement exception categorization
+    // - Add runtime exception metrics
     
     /**
      * Handles all other exceptions.
@@ -155,11 +131,24 @@ public class GlobalExceptionHandler {
         
         log.error("Unexpected exception occurred", ex);
         
-        // TODO: Build ErrorResponse with 500 status
-        // TODO: Use generic error message
-        // TODO: Include trace ID
+        // Build ErrorResponse with 500 status
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .code("INTERNAL_SERVER_ERROR")
+                .message("An unexpected error occurred. Please try again later.")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .path(getRequestPath(request))
+                .traceId(generateTraceId())
+                .timestamp(LocalDateTime.now())
+                .build();
         
-        throw new UnsupportedOperationException("handleGenericException not implemented yet");
+        // Return 500 Internal Server Error
+        return ResponseEntity.internalServerError().body(errorResponse);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add detailed error logging
+        // - Implement error notification system
+        // - Add error metrics collection
+        // - Implement error recovery suggestions
     }
     
     // TODO: Add custom exception handlers for business logic exceptions
@@ -177,12 +166,21 @@ public class GlobalExceptionHandler {
             HttpStatus status, 
             String path) {
         
-        // TODO: Build ErrorResponse with all fields
-        // TODO: Set current timestamp
-        // TODO: Include request path
-        // TODO: Add trace ID if available
+        // Build ErrorResponse with all fields
+        return ErrorResponse.builder()
+                .code(code)
+                .message(message)
+                .status(status.value())
+                .path(path)
+                .timestamp(LocalDateTime.now())
+                .traceId(generateTraceId())
+                .build();
         
-        return null;
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add request correlation ID
+        // - Include user context if available
+        // - Add error severity levels
+        // - Implement error documentation links
     }
     
     /**
@@ -190,9 +188,24 @@ public class GlobalExceptionHandler {
      * TODO: Implement this method
      */
     private String getRequestPath(WebRequest request) {
-        // TODO: Extract path from WebRequest
-        // TODO: Handle null request
-        return null;
+        // Extract path from WebRequest
+        if (request == null) {
+            return "unknown";
+        }
+        
+        // Get the request URI
+        String path = request.getDescription(false);
+        if (path != null && path.startsWith("uri=")) {
+            path = path.substring(4); // Remove "uri=" prefix
+        }
+        
+        return path != null ? path : "unknown";
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Extract HTTP method information
+        // - Add query parameters to path
+        // - Implement request ID tracking
+        // - Add client IP information
     }
     
     /**
@@ -200,39 +213,43 @@ public class GlobalExceptionHandler {
      * TODO: Implement this method
      */
     private String generateTraceId() {
-        // TODO: Generate unique trace ID
-        // TODO: Consider using UUID or correlation ID
-        return null;
+        // Generate unique trace ID using UUID
+        return "trace-" + java.util.UUID.randomUUID().toString().substring(0, 8);
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Implement distributed tracing correlation
+        // - Add request context to trace ID
+        // - Use custom trace ID format
+        // - Integrate with APM tools
     }
     
-    /**
-     * Helper method to determine if exception is resource not found.
-     * TODO: Implement this method
-     */
-    private boolean isResourceNotFoundException(Exception ex) {
-        // TODO: Check exception type or message
-        // TODO: Handle custom exceptions
-        return false;
-    }
-    
-    /**
-     * Helper method to determine if exception is duplicate resource.
-     * TODO: Implement this method
-     */
-    private boolean isDuplicateResourceException(Exception ex) {
-        // TODO: Check exception type or message
-        // TODO: Handle custom exceptions
-        return false;
-    }
+    // ENHANCEMENT OPPORTUNITIES for students:
+    // - Add helper methods for exception type detection
+    // - Implement custom exception hierarchy
+    // - Add exception classification logic
     
     /**
      * Helper method to sanitize error message for public consumption.
-     * TODO: Implement this method
      */
     private String sanitizeErrorMessage(String message) {
-        // TODO: Remove sensitive information
-        // TODO: Provide user-friendly message
-        // TODO: Handle null messages
-        return message;
+        // Handle null messages
+        if (message == null) {
+            return "An error occurred";
+        }
+        
+        // Basic sanitization - remove sensitive patterns
+        String sanitized = message
+                .replaceAll("password", "[REDACTED]")
+                .replaceAll("token", "[REDACTED]")
+                .replaceAll("key", "[REDACTED]");
+        
+        // Provide user-friendly message
+        return sanitized;
+        
+        // ENHANCEMENT OPPORTUNITIES for students:
+        // - Add comprehensive sensitive data patterns
+        // - Implement message localization
+        // - Add context-aware error messages
+        // - Implement error message templates
     }
 }

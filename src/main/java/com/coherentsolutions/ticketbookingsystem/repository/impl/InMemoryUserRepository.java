@@ -36,229 +36,326 @@ public class InMemoryUserRepository implements UserRepository {
     /**
      * Saves a user entity to the in-memory storage.
      * 
-     * Implementation notes:
-     * - Generates ID for new users
-     * - Updates existing users
+     * Basic implementation that handles:
+     * - ID generation for new users
+     * - Updates existing users 
      * - Sets timestamps appropriately
-     * - Ensures thread safety
+     * - Thread-safe storage
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add comprehensive validation
+     * - Implement optimistic locking
+     * - Add audit logging
+     * - Performance monitoring
      */
     @Override
     public User save(User user) {
-        log.debug("Saving user: {}", user.getEmail());
-        
-        // TODO: Validate user is not null
-        // TODO: Handle ID generation for new users
-        // TODO: Set creation timestamp for new users
-        // TODO: Update modification timestamp for existing users
-        // TODO: Store user in concurrent map
-        // TODO: Log the operation
+        log.debug("Saving user: {}", user != null ? user.getEmail() : "null");
         
         if (user == null) {
             throw new IllegalArgumentException("User cannot be null");
         }
         
-        // TODO: Implement the save logic
-        // Hint: Check if user.getId() is null (new user) or exists (update)
-        // For new users: generate ID and set createdAt
-        // For existing users: update updatedAt
+        LocalDateTime now = LocalDateTime.now();
         
-        throw new UnsupportedOperationException("save method not implemented yet");
+        // Handle new user creation
+        if (user.getId() == null) {
+            Long newId = generateNextId();
+            user.setId(newId);
+            user.setCreatedAt(now);
+            user.setUpdatedAt(now);
+            log.debug("Creating new user with ID: {}", newId);
+        } else {
+            // Handle existing user update
+            user.setUpdatedAt(now);
+            log.debug("Updating existing user with ID: {}", user.getId());
+        }
+        
+        // Store in concurrent map (thread-safe)
+        users.put(user.getId(), copyUser(user));
+        
+        log.debug("User saved successfully with ID: {}", user.getId());
+        return copyUser(user);
     }
     
     /**
      * Finds a user by their ID.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add caching for frequently accessed users
+     * - Implement query optimization
+     * - Add metrics collection
      */
     @Override
     public Optional<User> findById(Long id) {
         log.debug("Finding user by ID: {}", id);
         
-        // TODO: Validate ID is not null
-        // TODO: Look up user in map
-        // TODO: Return Optional.empty() if not found
+        if (id == null) {
+            return Optional.empty();
+        }
         
-        throw new UnsupportedOperationException("findById method not implemented yet");
+        User user = users.get(id);
+        return user != null ? Optional.of(copyUser(user)) : Optional.empty();
     }
     
     /**
      * Finds a user by their email address.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add email indexing for O(1) lookup
+     * - Implement more sophisticated email validation
+     * - Add support for email aliases
      */
     @Override
     public Optional<User> findByEmail(String email) {
         log.debug("Finding user by email: {}", email);
         
-        // TODO: Validate email is not null/empty
-        // TODO: Normalize email (toLowerCase, trim)
-        // TODO: Search through all users using stream
-        // TODO: Filter by email (case-insensitive)
-        // TODO: Return first match or empty
+        if (email == null || email.trim().isEmpty()) {
+            return Optional.empty();
+        }
         
-        throw new UnsupportedOperationException("findByEmail method not implemented yet");
+        String normalizedEmail = normalizeEmail(email);
+        
+        return users.values().stream()
+                .filter(user -> normalizedEmail.equals(normalizeEmail(user.getEmail())))
+                .findFirst()
+                .map(this::copyUser);
     }
     
     /**
      * Retrieves all users from storage.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add sorting options (by name, email, creation date)
+     * - Implement result caching
+     * - Add filtering capabilities
      */
     @Override
     public List<User> findAll() {
         log.debug("Finding all users. Total count: {}", users.size());
         
-        // TODO: Return new ArrayList from users.values()
-        // TODO: Consider sorting by ID or creation date
-        // TODO: Handle empty collection
-        
-        throw new UnsupportedOperationException("findAll method not implemented yet");
+        return users.values().stream()
+                .map(this::copyUser)
+                .sorted((u1, u2) -> u1.getId().compareTo(u2.getId()))
+                .collect(Collectors.toList());
     }
     
     /**
      * Retrieves users with pagination.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add parameter validation with meaningful error messages
+     * - Implement cursor-based pagination for better performance
+     * - Add total count information
      */
     @Override
     public List<User> findAll(int offset, int limit) {
         log.debug("Finding users with pagination - offset: {}, limit: {}", offset, limit);
         
-        // TODO: Validate offset and limit parameters
-        // TODO: Get all users and sort them
-        // TODO: Use stream.skip(offset).limit(limit)
-        // TODO: Collect to list and return
+        if (offset < 0) offset = 0;
+        if (limit <= 0) limit = 10;
         
-        throw new UnsupportedOperationException("findAll with pagination not implemented yet");
+        return users.values().stream()
+                .map(this::copyUser)
+                .sorted((u1, u2) -> u1.getId().compareTo(u2.getId()))
+                .skip(offset)
+                .limit(limit)
+                .collect(Collectors.toList());
     }
     
     /**
      * Deletes a user by their ID.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Implement soft delete instead of hard delete
+     * - Add cascade deletion for related entities
+     * - Add audit logging for deleted users
      */
     @Override
     public boolean deleteById(Long id) {
         log.debug("Deleting user by ID: {}", id);
         
-        // TODO: Validate ID is not null
-        // TODO: Remove user from map
-        // TODO: Return true if user was removed, false if not found
-        // TODO: Log the operation result
+        if (id == null) {
+            return false;
+        }
         
-        throw new UnsupportedOperationException("deleteById method not implemented yet");
+        User removedUser = users.remove(id);
+        boolean wasRemoved = removedUser != null;
+        
+        if (wasRemoved) {
+            log.debug("User with ID {} deleted successfully", id);
+        } else {
+            log.debug("User with ID {} not found for deletion", id);
+        }
+        
+        return wasRemoved;
     }
     
     /**
      * Deletes a user entity.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add entity validation
+     * - Implement optimistic locking checks
      */
     @Override
     public boolean delete(User user) {
         log.debug("Deleting user: {}", user != null ? user.getEmail() : "null");
         
-        // TODO: Validate user is not null
-        // TODO: Get user ID and delegate to deleteById
+        if (user == null || user.getId() == null) {
+            return false;
+        }
         
-        throw new UnsupportedOperationException("delete method not implemented yet");
+        return deleteById(user.getId());
     }
     
     /**
      * Checks if a user exists by ID.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add caching for existence checks
+     * - Optimize for frequent lookups
      */
     @Override
     public boolean existsById(Long id) {
         log.debug("Checking if user exists by ID: {}", id);
         
-        // TODO: Validate ID is not null
-        // TODO: Check if map contains key
+        if (id == null) {
+            return false;
+        }
         
-        throw new UnsupportedOperationException("existsById method not implemented yet");
+        return users.containsKey(id);
     }
     
     /**
      * Checks if a user exists by email.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add email indexing for O(1) lookup
+     * - Implement case-insensitive search optimization
      */
     @Override
     public boolean existsByEmail(String email) {
         log.debug("Checking if user exists by email: {}", email);
         
-        // TODO: Validate email is not null/empty
-        // TODO: Use findByEmail and check if Optional is present
-        
-        throw new UnsupportedOperationException("existsByEmail method not implemented yet");
+        return findByEmail(email).isPresent();
     }
     
     /**
      * Counts total number of users.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add filtering options (active users only, by role, etc.)
+     * - Implement caching for count operations
      */
     @Override
     public long count() {
         log.debug("Counting users");
         
-        // TODO: Return size of users map
-        
-        throw new UnsupportedOperationException("count method not implemented yet");
+        return users.size();
     }
     
     /**
      * Finds users by name (first name or last name).
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add fuzzy search capabilities
+     * - Implement full-text search
+     * - Add search result ranking
      */
     @Override
     public List<User> findByNameContaining(String searchTerm) {
         log.debug("Searching users by name: {}", searchTerm);
         
-        // TODO: Validate search term is not null/empty
-        // TODO: Normalize search term (toLowerCase, trim)
-        // TODO: Filter users by firstName or lastName containing search term
-        // TODO: Use case-insensitive matching
-        // TODO: Collect results to list
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
         
-        throw new UnsupportedOperationException("findByNameContaining method not implemented yet");
+        String normalizedSearchTerm = searchTerm.toLowerCase().trim();
+        
+        return users.values().stream()
+                .filter(user -> {
+                    String firstName = user.getFirstName() != null ? user.getFirstName().toLowerCase() : "";
+                    String lastName = user.getLastName() != null ? user.getLastName().toLowerCase() : "";
+                    return firstName.contains(normalizedSearchTerm) || lastName.contains(normalizedSearchTerm);
+                })
+                .map(this::copyUser)
+                .collect(Collectors.toList());
     }
     
     /**
      * Finds active users only.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add indexing for better performance
+     * - Implement caching for active users
      */
     @Override
     public List<User> findByActiveTrue() {
         log.debug("Finding active users");
         
-        // TODO: Filter users by active = true
-        // TODO: Collect to list
-        
-        throw new UnsupportedOperationException("findByActiveTrue method not implemented yet");
+        return users.values().stream()
+                .filter(User::isActive)
+                .map(this::copyUser)
+                .collect(Collectors.toList());
     }
     
     /**
      * Finds inactive users only.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add indexing for better performance
+     * - Implement automatic cleanup of inactive users
      */
     @Override
     public List<User> findByActiveFalse() {
         log.debug("Finding inactive users");
         
-        // TODO: Filter users by active = false
-        // TODO: Collect to list
-        
-        throw new UnsupportedOperationException("findByActiveFalse method not implemented yet");
+        return users.values().stream()
+                .filter(user -> !user.isActive())
+                .map(this::copyUser)
+                .collect(Collectors.toList());
     }
     
     /**
      * Finds users created after a specific date.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add date range queries
+     * - Implement timezone handling
+     * - Add date indexing for performance
      */
     @Override
     public List<User> findByCreatedAtAfter(LocalDateTime date) {
         log.debug("Finding users created after: {}", date);
         
-        // TODO: Validate date is not null
-        // TODO: Filter users by createdAt > date
-        // TODO: Handle null createdAt values
-        // TODO: Collect to list
+        if (date == null) {
+            return new ArrayList<>();
+        }
         
-        throw new UnsupportedOperationException("findByCreatedAtAfter method not implemented yet");
+        return users.values().stream()
+                .filter(user -> user.getCreatedAt() != null && user.getCreatedAt().isAfter(date))
+                .map(this::copyUser)
+                .collect(Collectors.toList());
     }
     
     /**
      * Deletes all users from storage.
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add confirmation mechanisms
+     * - Implement backup before deletion
+     * - Add audit logging
      */
     @Override
     public void deleteAll() {
         log.warn("Deleting all users from storage");
         
-        // TODO: Clear the users map
-        // TODO: Reset ID generator
-        // TODO: Log the operation
+        int deletedCount = users.size();
+        users.clear();
+        idGenerator.set(1);
         
-        throw new UnsupportedOperationException("deleteAll method not implemented yet");
+        log.warn("Deleted {} users from storage", deletedCount);
     }
     
     // TODO: Add helper methods for common operations
@@ -267,63 +364,116 @@ public class InMemoryUserRepository implements UserRepository {
     
     /**
      * Helper method to generate next ID.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Implement UUID generation for better scalability
+     * - Add ID recycling for deleted users
      */
     private Long generateNextId() {
-        // TODO: Use AtomicLong to generate next ID
-        // TODO: Ensure thread safety
-        return null;
+        return idGenerator.getAndIncrement();
     }
     
     /**
      * Helper method to normalize email.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add email validation
+     * - Implement domain normalization
+     * - Add support for international email formats
      */
     private String normalizeEmail(String email) {
-        // TODO: Trim whitespace and convert to lowercase
-        // TODO: Handle null/empty values
-        return null;
+        if (email == null) {
+            return null;
+        }
+        return email.trim().toLowerCase();
     }
     
     /**
      * Helper method to validate user before saving.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add comprehensive field validation
+     * - Implement business rule validation
+     * - Add custom validation annotations
      */
     private void validateUser(User user) {
-        // TODO: Check required fields
-        // TODO: Validate email format
-        // TODO: Check field lengths
-        // TODO: Throw appropriate exceptions
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+        
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        
+        // Basic validation - students can enhance this
+        if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
+            throw new IllegalArgumentException("First name cannot be null or empty");
+        }
+        
+        if (user.getLastName() == null || user.getLastName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Last name cannot be null or empty");
+        }
     }
     
     /**
      * Helper method to create a copy of user for thread safety.
-     * TODO: Implement this method
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Implement deep cloning for complex objects
+     * - Add copy validation
+     * - Optimize copying for performance
      */
     private User copyUser(User user) {
-        // TODO: Create deep copy of user object
-        // TODO: Avoid returning references to internal objects
-        return null;
+        if (user == null) {
+            return null;
+        }
+        
+        return User.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .passwordHash(user.getPasswordHash())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phoneNumber(user.getPhoneNumber())
+                .active(user.isActive())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
     
     /**
      * Demo method to populate with sample data.
-     * TODO: Remove this method in production
+     * 
+     * ENHANCEMENT OPPORTUNITIES for students:
+     * - Add configuration-based sample data loading
+     * - Implement data seeding from external files
+     * - Add environment-specific sample data
      */
     public void initializeWithSampleData() {
         log.info("Initializing repository with sample data");
         
-        // TODO: Create sample users for testing
-        // TODO: Call save method for each sample user
-        // TODO: Log the initialization
+        // Sample users for testing
+        User admin = User.builder()
+                .email("admin@example.com")
+                .passwordHash("hashed-password-admin")
+                .firstName("Admin")
+                .lastName("User")
+                .phoneNumber("+1234567890")
+                .active(true)
+                .build();
         
-        // Example sample data structure:
-        // User admin = User.builder()
-        //     .email("admin@example.com")
-        //     .firstName("Admin")
-        //     .lastName("User")
-        //     .active(true)
-        //     .build();
-        // save(admin);
+        User testUser = User.builder()
+                .email("test@example.com")
+                .passwordHash("hashed-password-test")
+                .firstName("Test")
+                .lastName("User")
+                .phoneNumber("+0987654321")
+                .active(true)
+                .build();
+        
+        save(admin);
+        save(testUser);
+        
+        log.info("Sample data initialized with {} users", users.size());
     }
 }

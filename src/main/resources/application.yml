@@ -14,37 +14,39 @@ spring:
   profiles:
     active: dev  # TODO: Change to 'prod' for production
   
-  # H2 Database Configuration (for development)
-  # TODO: Replace with PostgreSQL/MySQL configuration for production
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: password
-    # TODO: Configure connection pool settings
-    # hikari:
-    #   maximum-pool-size: 10
-    #   minimum-idle: 5
-    #   connection-timeout: 30000
+  # Database Configuration - Currently using in-memory storage
+  # ENHANCEMENT OPPORTUNITIES for students:
+  # - Add H2 Database configuration for persistence
+  # - Configure PostgreSQL/MySQL for production
+  # - Add connection pool settings
+  # - Implement database migrations with Flyway/Liquibase
   
-  # H2 Console Configuration (for development only)
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
-      settings:
-        web-allow-others: false  # TODO: Set to false for production
+  # Example H2 configuration (commented out for in-memory approach):
+  # datasource:
+  #   url: jdbc:h2:mem:testdb
+  #   driverClassName: org.h2.Driver
+  #   username: sa
+  #   password: password
   
-  # JPA Configuration
-  # TODO: Configure JPA properties for database persistence
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create-drop  # TODO: Change to 'validate' for production
-    show-sql: true  # TODO: Set to false for production
-    properties:
-      hibernate:
-        format_sql: true
+  # h2:
+  #   console:
+  #     enabled: true
+  #     path: /h2-console
+  
+  # JPA Configuration (commented out for in-memory approach)
+  # ENHANCEMENT OPPORTUNITIES for students:
+  # - Enable JPA configuration when implementing database persistence
+  # - Configure Hibernate properties
+  # - Add database validation rules
+  
+  # jpa:
+  #   database-platform: org.hibernate.dialect.H2Dialect
+  #   hibernate:
+  #     ddl-auto: create-drop
+  #   show-sql: true
+  #   properties:
+  #     hibernate:
+  #       format_sql: true
   
   # Jackson Configuration
   jackson:
@@ -88,8 +90,9 @@ logging:
     root: INFO
     com.coherentsolutions.ticketbookingsystem: DEBUG  # TODO: Change to INFO for production
     org.springframework.web: DEBUG  # TODO: Change to INFO for production
-    org.hibernate.SQL: DEBUG  # TODO: Change to WARN for production
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # TODO: Remove for production
+    # JPA/Hibernate logging (commented out for in-memory approach)
+    # org.hibernate.SQL: DEBUG  # TODO: Enable when using JPA
+    # org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # TODO: Enable when using JPA
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
