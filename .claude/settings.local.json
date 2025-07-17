@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(rm:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(cd:*)",
+      "Bash(cd:*)",
+      "Bash(timeout:*)",
+      "Bash(git add src/main/java/com/coherentsolutions/ticketbookingsystem/controller/GlobalExceptionHandler.java src/main/java/com/coherentsolutions/ticketbookingsystem/controller/UserController.java src/main/java/com/coherentsolutions/ticketbookingsystem/dto/response/UserResponse.java src/main/java/com/coherentsolutions/ticketbookingsystem/entity/User.java src/main/java/com/coherentsolutions/ticketbookingsystem/mapper/UserMapper.java src/main/java/com/coherentsolutions/ticketbookingsystem/repository/impl/InMemoryUserRepository.java src/main/java/com/coherentsolutions/ticketbookingsystem/service/impl/UserServiceImpl.java src/main/resources/application.yml src/test/java/com/coherentsolutions/ticketbookingsystem/integration/UserApiIntegrationTest.java)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nConvert template from non-compilable to working skeleton\n\nTransform the project from throwing UnsupportedOperationException everywhere\nto a fully functional Spring Boot application that compiles and runs immediately.\n\nChanges:\n- Implement working CRUD operations in InMemoryUserRepository\n- Add functional MapStruct mappings in UserMapper\n- Convert UserService to working business logic with validation\n- Implement REST endpoints in UserController with proper HTTP status codes\n- Add working GlobalExceptionHandler with structured error responses\n- Configure application.yml for in-memory approach\n- Fix test compilation issues\n\nStudents can now clone → compile → run → test endpoints → enhance features.\nThe template preserves extensive learning opportunities through\n\"ENHANCEMENT OPPORTUNITIES\" comments throughout the codebase.\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(cd:*)",
+      "Bash(cd:*)",
+      "Bash(cd:*)",
+      "Bash(cd:*)",
+      "Bash(git add:*)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }

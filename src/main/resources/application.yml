@@ -4,7 +4,6 @@
 # - Environment-specific configurations
 # - Logging configuration
 # - Server configuration
-# - H2 database configuration
 
 spring:
   application:
@@ -12,55 +11,17 @@ spring:
   
   # Profile configuration
   profiles:
-    active: dev  # TODO: Change to 'prod' for production
+    active: dev
   
-  # Database Configuration - Currently using in-memory storage
-  # ENHANCEMENT OPPORTUNITIES for students:
-  # - Add H2 Database configuration for persistence
-  # - Configure PostgreSQL/MySQL for production
-  # - Add connection pool settings
-  # - Implement database migrations with Flyway/Liquibase
-  
-  # Example H2 configuration (commented out for in-memory approach):
-  # datasource:
-  #   url: jdbc:h2:mem:testdb
-  #   driverClassName: org.h2.Driver
-  #   username: sa
-  #   password: password
-  
-  # h2:
-  #   console:
-  #     enabled: true
-  #     path: /h2-console
-  
-  # JPA Configuration (commented out for in-memory approach)
-  # ENHANCEMENT OPPORTUNITIES for students:
-  # - Enable JPA configuration when implementing database persistence
-  # - Configure Hibernate properties
-  # - Add database validation rules
-  
-  # jpa:
-  #   database-platform: org.hibernate.dialect.H2Dialect
-  #   hibernate:
-  #     ddl-auto: create-drop
-  #   show-sql: true
-  #   properties:
-  #     hibernate:
-  #       format_sql: true
-  
-  # Jackson Configuration
+  # Jackson Configuration for JSON serialization
   jackson:
     serialization:
       write-dates-as-timestamps: false
-      indent-output: true  # TODO: Set to false for production
+      indent-output: true
     deserialization:
       fail-on-unknown-properties: false
     default-property-inclusion: non_null
   
-  # Validation Configuration
-  validation:
-    # TODO: Configure validation messages
-    
   # DevTools Configuration (development only)
   devtools:
     restart:
@@ -71,96 +32,50 @@ spring:
 # Server Configuration
 server:
   port: 8080
-  servlet:
-    context-path: /  # TODO: Consider adding context path for production
   error:
     include-message: always
     include-binding-errors: always
-    include-stacktrace: on_param  # TODO: Set to 'never' for production
+    include-stacktrace: on_param
     include-exception: false
-  # TODO: Configure SSL for production
-  # ssl:
-  #   key-store: classpath:keystore.p12
-  #   key-store-password: password
-  #   key-store-type: PKCS12
 
 # Logging Configuration
 logging:
   level:
     root: INFO
-    com.coherentsolutions.ticketbookingsystem: DEBUG  # TODO: Change to INFO for production
-    org.springframework.web: DEBUG  # TODO: Change to INFO for production
-    # JPA/Hibernate logging (commented out for in-memory approach)
-    # org.hibernate.SQL: DEBUG  # TODO: Enable when using JPA
-    # org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # TODO: Enable when using JPA
+    com.coherentsolutions.ticketbookingsystem: DEBUG
+    org.springframework.web: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
-  # TODO: Configure file logging for production
-  # file:
-  #   name: logs/application.log
-  #   max-size: 10MB
-  #   max-history: 10
 
 # Management and Actuator Configuration
-# TODO: Configure Spring Boot Actuator for production monitoring
 management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics  # TODO: Limit exposed endpoints for production
+        include: health,info,metrics
   endpoint:
     health:
-      show-details: when-authorized  # TODO: Configure for production
+      show-details: when-authorized
   info:
     env:
       enabled: true
 
 # Application-specific Configuration
-# TODO: Add custom application properties
 app:
   name: "Ticket Booking System"
   version: "1.0.0"
   description: "REST API for ticket booking system"
   
-  # Security Configuration (for future implementation)
-  # TODO: Configure JWT and authentication
-  security:
-    jwt:
-      secret: "your-secret-key"  # TODO: Use environment variable
-      expiration: 86400000  # 24 hours
-    
-  # Email Configuration (for future implementation)
-  # TODO: Configure email service
-  email:
-    from: "noreply@ticketbooking.com"
-    enabled: false
-    
-  # File Upload Configuration (for future implementation)
-  # TODO: Configure file upload limits
-  upload:
-    max-file-size: 10MB
-    max-request-size: 10MB
-    
-  # Pagination Configuration
-  # TODO: Configure default pagination settings
-  pagination:
-    default-page-size: 10
-    max-page-size: 100
-    
   # API Configuration
   api:
     version: "v1"
     base-path: "/api/v1"
     
-  # Cache Configuration (for future implementation)
-  # TODO: Configure caching
-  cache:
-    enabled: false
-    ttl: 3600  # 1 hour
+  # Pagination Configuration
+  pagination:
+    default-page-size: 10
+    max-page-size: 100
 
-# TODO: Add environment-specific configurations in separate files
-# TODO: Configure external service connections
-# TODO: Add monitoring and metrics configuration
-# TODO: Configure rate limiting
-# TODO: Add API documentation configuration
+# TODO: Students should add database configuration when implementing persistence
+# TODO: Add security configuration when implementing authentication
+# TODO: Add external service configurations as needed
